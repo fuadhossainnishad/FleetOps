@@ -1,0 +1,22 @@
+FleetOps Engineering Rules
+
+- Java 21.
+- Spring Boot.
+- Maven.
+- Prefer simple, explicit designs over premature abstraction.
+- Domain correctness before infrastructure complexity.
+- PostgreSQL is authoritative transactional state.
+- Every concurrency-sensitive operation must have an explicit strategy.
+- Every external integration must define failure behavior.
+- Do not introduce a dependency without a concrete requirement.
+- Do not invent APIs, entities, fields, or architecture without inspecting the repository.
+- Do not modify unrelated files.
+- Preserve existing behavior unless the task explicitly changes it.
+- Add tests for meaningful behavior and failure cases.
+- Run the narrowest relevant verification after changes.
+- Never claim an implementation that does not exist.
+- Update documentation when an architectural decision changes.
+- Prefer incremental vertical slices.
+- Do not create microservices unless a demonstrated requirement justifies them.
+- Do not add Kafka/Redis/Elasticsearch/etc. merely for résumé keywords.
+- Keep commits small and semantically meaningful.
