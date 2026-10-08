@@ -18,6 +18,8 @@ The latest table is the one explicitly optional relation; it should be introduce
 
 ## Transaction boundaries and constraints
 
+The initial Shipment migration creates only the minimal `customer` identity/active row needed by the Shipment FK and create-time active check, plus the Shipment table. Shipment IDs and Customer IDs use PostgreSQL `UUID`; `created_at` uses `TIMESTAMPTZ`. Pickup and delivery execution instructions are required nonblank `TEXT` values. Hibernate validates the Flyway-owned schema and does not generate it. Shipment updates use a `version` column for optimistic concurrency; stale writes fail rather than overwrite a newer lifecycle state.
+
 - Shipment creation/status transition: one shipment transaction; FK verifies customer existence, and application/domain validation verifies active customer. Use row lock or optimistic version to prevent lost transitions.
 - Dispatch assign/release: one PostgreSQL transaction locks shipment, vehicle, and driver in deterministic order, checks eligibility, writes dispatch and all current assignment/status changes. Partial unique constraints are the final at-most-one guard. A conflict rolls back fully.
 - Tracking ingest: insert immutable history with a deduplication constraint when source identity is defined; update latest state conditionally in the same transaction. A stale observation is retained historically and does not replace newer latest state.

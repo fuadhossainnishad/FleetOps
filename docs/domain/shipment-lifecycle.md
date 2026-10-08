@@ -31,6 +31,14 @@ stateDiagram-v2
 
 `Exception` is a proposed nonterminal holding state, not an excuse to encode arbitrary statuses. Its permitted causes, resume behavior, and cancellation rules require operational policy. The narrow baseline can omit it until a real exception workflow is specified. In all cases, transitions are explicit methods/commands, not a writable status setter.
 
+## Initial implementation decision
+
+The first persistence slice implements creation as `Requested` and pre-dispatch cancellation as `Requested → Cancelled`. Dispatch assignment, execution start, release, and completion remain unimplemented because their documented rules require Dispatch/resource state and authorization/evidence workflows outside this slice. The status vocabulary in the schema covers the documented baseline lifecycle, but no persistence operation can set those later states directly.
+
+The currently required execution instructions are represented as two nonblank plain-text values, `pickup_instructions` and `delivery_instructions`. This is the smallest representation that distinguishes the two required workflow instructions without assuming address, coordinates, cargo, or contact data. These fields are internal persistence/domain data and do not define an HTTP payload.
+
+Shipment writes use JPA optimistic versioning. Each update includes the loaded version; a stale write fails and the enclosing transaction rolls back. Creation reads the Customer's active flag with a row share lock, so a concurrent Customer deactivation cannot pass the create check and commit ahead of it. Customer identity/status is represented by a minimal database table for the FK and active check; no Customer API or aggregate behavior is implemented.
+
 ## Transition rules
 
 | From → To | Rule / effect |
